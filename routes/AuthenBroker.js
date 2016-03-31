@@ -11,8 +11,8 @@ var mongoose = require('mongoose');
 var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
 // var mongodbURL='mongodb://localhost/mqttserver';
 
-var SECURE_KEY = __dirname + '/../secure/tls-key.pem';
-var SECURE_CERT = __dirname + '/../secure/tls-cert.pem';
+// var SECURE_KEY = __dirname + '/../secure/tls-key.pem';
+// var SECURE_CERT = __dirname + '/../secure/tls-cert.pem';
 
 var ascoltatore = {
   //using ascoltatore
@@ -36,8 +36,8 @@ var settings = {
   // }
 
   interfaces: [
-        { type: "mqtts", port: 8883, credentials: { keyPath: SECURE_KEY, certPath: SECURE_CERT } },
-        { type: "https", port: 8884, bundle: true, credentials: { keyPath: SECURE_KEY, certPath: SECURE_CERT } }
+        { type: "mqtt", port: 8883 },
+        { type: "http", port: 8884, bundle: true }
   ],
   stats: false,
   backend: ascoltatore
@@ -48,6 +48,8 @@ var userDB = mongoose.model('user', { email: String ,
                    username_broker: String ,
                    password_broker: String ,
                    devices: [{device_id: String ,
+                          device_name: String,
+                          device_description: String,
                           subscribe:[String],
                           status: String}],
                    limit_connection: Number
@@ -83,24 +85,33 @@ var authenticate = function(client, username, password, callback) {
         var authorized = (username && password);
         if (authorized){
           client.user = clientUser;
-          client.password = password;
+          client.username_broker = username;
+          client.password_broker = password;
         } 
-        console.log(client.id);
+        console.log(client);
         callback(null, authorized);
       }
   });
 }
 
 var authorizePublish = function(client, topic, payload, callback) {
-  callback(null, client.user == topic.split('/')[0]);
+  callback(null, client.username_broker == topic.split('/')[0]);
 }
 
 var authorizeSubscribe = function(client, topic, callback) {
-  callback(null, client.user == topic.split('/')[0]);
+  callback(null, client.username_broker == topic.split('/')[0]);
 }
 
 
 server.on('clientConnected', function(client) {
+    userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
+      console.log(userData.length);
+      if(userData.length != 0){
+        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "connect"}}, function(err,userData){
+          console.log(userData);
+        })
+      }
+    })
     console.log('Authen Broker -----> client connected', client.id , '\n');
 });
 
@@ -124,6 +135,14 @@ server.on('clientDisconnecting', function(client) {
  
 // fired when a client is disconnected
 server.on('clientDisconnected', function(client) {
+  userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
+      console.log(userData.length);
+      if(userData.length != 0){
+        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "disconnect"}}, function(err,userData){
+          console.log(userData);
+        })
+      }
+    })
   console.log('Authen Broker -----> clientDisconnected : ', client.id , '\n');
 });
 
