@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mosca = require('mosca');
 var ip = require('ip');
+var io = require('socket.io').listen(5000);
 // var fs = require("fs");
 // var Connection = require("mqtt-connection");
 // var ws = require("websocket-stream");
@@ -74,25 +75,63 @@ var server = new mosca.Server(settings);
 
 // Authen
 var authenticate = function(client, username, password, callback) {
-  userDB.find({'username_broker': username , 'password_broker': password}, function(err,userData){
+  if (client.id.split('_')[0] === 'web'){
+    userDB.find({'username_broker': username , 'password_broker': password}, function(err,userData){
+      if (userData.length == 0) {
+        console.log('user not found');
+      }else{
+        var authorized = (username && password);
+          if (authorized){
+            client.user = client.id.split('_')[1];
+            client.username_broker = username;
+            client.password_broker = password;
+
+            
+            client.deviceStatus = {};
+            console.log(client);
+          } 
+          // console.log(client);
+          callback(null, authorized);
+      }
+    });
+  }
+  userDB.find({'username_broker': username , 'password_broker': password , devices:{ $elemMatch: {device_id: client.id}}}, function(err,userData){
       if(userData.length ==  0){
         console.log('user not found');
       }else{
         var clientUser = userData[0].email;
-        console.log(userData);
-        console.log(clientUser);
+        // console.log(userData);
+        // console.log(clientUser);
 
         var authorized = (username && password);
         if (authorized){
           client.user = clientUser;
           client.username_broker = username;
           client.password_broker = password;
+
+          
+          client.deviceStatus = {};
+          console.log(client);
         } 
-        console.log(client);
+        // console.log(client);
         callback(null, authorized);
       }
   });
 }
+
+// io.sockets.on("connection", function(socket){
+//         console.log('user connected');
+//         socket.emit("deviceStatus", deviceStatus);
+
+//         socket.on('disconnect', function(){
+//           console.log('user disconnected');
+//         });
+
+//         socket.on('deviceStatus', function(msg){
+//           console.log("Server : " + msg);
+//           // socket.emit("deviceStatus", msg);
+//         });
+//       })
 
 var authorizePublish = function(client, topic, payload, callback) {
   callback(null, client.username_broker == topic.split('/')[0]);
@@ -102,18 +141,41 @@ var authorizeSubscribe = function(client, topic, callback) {
   callback(null, client.username_broker == topic.split('/')[0]);
 }
 
-
-server.on('clientConnected', function(client) {
+io.sockets.on("connection", function(socket){
+  server.on('clientConnected', function(client) {
     userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
       console.log(userData.length);
       if(userData.length != 0){
-        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "connect"}}, function(err,userData){
-          console.log(userData);
+        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "connect"}}, function(err,updateStatus){
+          userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id} , function(err,deviceData){
+            client.deviceStatus[deviceData[0].devices[0].device_id] = deviceData[0].devices[0].status;
+            console.log(client.deviceStatus);
+            socket.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
+          })
         })
       }
     })
     console.log('Authen Broker -----> client connected', client.id , '\n');
-});
+  });
+
+  // fired when a client is disconnected
+  server.on('clientDisconnected', function(client) {
+    userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
+        console.log(userData.length);
+        if(userData.length != 0){
+          userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "disconnect"}}, function(err,userData){
+            userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id} , function(err,deviceData){
+              client.deviceStatus[deviceData[0].devices[0].device_id] = deviceData[0].devices[0].status;
+              console.log(client.deviceStatus);
+              socket.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
+            })
+          })
+        }
+      })
+    console.log('Authen Broker -----> clientDisconnected : ', client.id , '\n');
+  });
+
+})
 
 // fired when a message is received
 server.on('published', function(packet) {
@@ -131,19 +193,6 @@ server.on('unsubscribed', function(topic, client) {
 // fired when a client is disconnecting
 server.on('clientDisconnecting', function(client) {
   console.log('Authen Broker -----> clientDisconnecting : ', client.id , '\n');
-});
- 
-// fired when a client is disconnected
-server.on('clientDisconnected', function(client) {
-  userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
-      console.log(userData.length);
-      if(userData.length != 0){
-        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "disconnect"}}, function(err,userData){
-          console.log(userData);
-        })
-      }
-    })
-  console.log('Authen Broker -----> clientDisconnected : ', client.id , '\n');
 });
 
 server.on('ready', setup);

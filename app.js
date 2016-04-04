@@ -1,5 +1,4 @@
 var express = require('express');
-var https = require('https');
 var fs = require('fs');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -22,10 +21,6 @@ var AuthenBroker = require('./routes/PublicBroker');
 var home = require('./routes/index');
 
 var app = express();
-
-var serverSSL = https.createServer(options, app).listen(3331, function(){
-    console.log("server started at port 3331");
-});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
