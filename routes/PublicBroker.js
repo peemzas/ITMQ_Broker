@@ -3,8 +3,8 @@ var router = express.Router();
 var mosca = require('mosca');
 var ip = require('ip');
 var mongoose = require('mongoose');
-// var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
-var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
+var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
+// var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
 // var mongodbURL='mongodb://localhost/mqttserver';
 
 var ascoltatore = {
@@ -16,20 +16,25 @@ var ascoltatore = {
 };
 
 var settings = {
-  // port: 1883,
-  // backend: ascoltatore,
-  // http: {
-  //   port: 1884,
-  //   bundle: true,
-  //   static: './'
-  // }
+  port: 1883,
+  backend: ascoltatore,
+  http: {
+    port: 1884,
+    bundle: true,
+    static: './'
+  },
 
-  interfaces: [
-        { type: "mqtt", port: 1883 },
-        { type: "http", port: 1884 }
-  ],
+  // interfaces: [
+  //       { type: "mqtt", port: 1883 },
+  //       { type: "http", port: 1884 }
+  // ],
   stats: false,
-  backend: ascoltatore
+  backend: ascoltatore,
+  persistence : {
+        factory: mosca.persistence.Mongo,
+        url: mongodbURL,
+        autoClose: false
+  }
 };
 
 var server = new mosca.Server(settings);

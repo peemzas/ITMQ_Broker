@@ -8,20 +8,20 @@ var io = require('socket.io').listen(5000);
 // var ws = require("websocket-stream");
 
 var mongoose = require('mongoose');
-// var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
-var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
+var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
+// var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
 // var mongodbURL='mongodb://localhost/mqttserver';
 
 // var SECURE_KEY = __dirname + '/../secure/tls-key.pem';
 // var SECURE_CERT = __dirname + '/../secure/tls-cert.pem';
 
-var ascoltatore = {
-  //using ascoltatore
-  type: 'mongo',
-  url: mongodbURL,
-  pubsubCollection: 'ascoltatori',
-  mongo: {}
-};
+// var ascoltatore = {
+//   //using ascoltatore
+//   type: 'mongo',
+//   url: mongodbURL,
+//   pubsubCollection: 'ascoltatori',
+//   mongo: {}
+// };
 
 var settings = {
   // port: 8883,
@@ -40,8 +40,8 @@ var settings = {
         { type: "mqtt", port: 8883 },
         { type: "http", port: 8884, bundle: true }
   ],
-  stats: false,
-  backend: ascoltatore
+  stats: false
+  // backend: ascoltatore
 };
 
 var userDB = mongoose.model('user', { email: String ,
@@ -51,10 +51,22 @@ var userDB = mongoose.model('user', { email: String ,
                    devices: [{device_id: String ,
                           device_name: String,
                           device_description: String,
+                          device_type: String,
+                          category:String,
                           subscribe:[String],
-                          status: String}],
+                          status: String,
+                          project_id: String}],
                    limit_connection: Number
                 });
+
+var messageDB = mongoose.model('message', { email: String,
+                                    project_id: String,
+                                    device_id: String,
+                                    topic: String,
+                                    payload: String,
+                                    subscriber: [String],
+                                    date: { type: Date, default: Date.now, required: true, expires: '1h' }
+                                });
 
 // function createConnection(port) {
 //   var stream = ws("wss://localhost:" + port, [], {
@@ -88,14 +100,14 @@ var authenticate = function(client, username, password, callback) {
 
             
             client.deviceStatus = {};
-            console.log(client);
+            // console.log(client);
           } 
           // console.log(client);
           callback(null, authorized);
       }
     });
-  }
-  userDB.find({'username_broker': username , 'password_broker': password , devices:{ $elemMatch: {device_id: client.id}}}, function(err,userData){
+  }else{
+    userDB.find({'username_broker': username , 'password_broker': password , devices:{ $elemMatch: {device_id: client.id}}}, function(err,userData){
       if(userData.length ==  0){
         console.log('user not found');
       }else{
@@ -111,12 +123,13 @@ var authenticate = function(client, username, password, callback) {
 
           
           client.deviceStatus = {};
-          console.log(client);
+          // console.log(client);
         } 
         // console.log(client);
         callback(null, authorized);
       }
-  });
+    });
+  }
 }
 
 // io.sockets.on("connection", function(socket){
@@ -134,59 +147,173 @@ var authenticate = function(client, username, password, callback) {
 //       })
 
 var authorizePublish = function(client, topic, payload, callback) {
-  callback(null, client.username_broker == topic.split('/')[0]);
+  if (client.id.split('_')[0] === 'web'){
+    callback(null, client.username_broker == topic.split('/')[0]);
+  }else{
+    userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,deviceData){
+      console.log("Authen publish : " + deviceData[0].devices[0].device_type);
+      if(deviceData[0].devices[0].device_type == 'Publisher' || deviceData[0].devices[0].device_type == 'Both'){
+        console.log('You can publish OK?');
+        callback(null, client.username_broker == topic.split('/')[0]);
+      }else if(deviceData[0].devices[0].device_type == 'Subscriber'){
+        console.log('You can not publish OK?, DAFUQ');
+      }
+    })
+  }
 }
 
 var authorizeSubscribe = function(client, topic, callback) {
-  callback(null, client.username_broker == topic.split('/')[0]);
+  if (client.id.split('_')[0] === 'web'){
+    callback(null, client.username_broker == topic.split('/')[0]);
+  }else{
+    userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,deviceData){
+      console.log("Authen publish : " + deviceData[0].devices[0].device_type);
+      if(deviceData[0].devices[0].device_type == 'Publisher'){
+        console.log('You can not subscribe OK?, DAFUQ');
+      }else if(deviceData[0].devices[0].device_type == 'Subscriber' || deviceData[0].devices[0].device_type == 'Both'){
+        console.log('You can subscribe OK?');
+        callback(null, client.username_broker == topic.split('/')[0])
+      }
+    })
+  }
 }
 
 io.sockets.on("connection", function(socket){
-  server.on('clientConnected', function(client) {
-    userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
+  socket.emit('send id', socket.id);
+  console.log(socket.id);
+
+  socket.on("deleteHistoryTopic", function(data){
+    io.sockets.emit("unsubtopic", data);
+    console.log(data);
+  })
+
+  socket.on("closeConnect", function(deviceId){
+    if(server.clients[deviceId] != undefined){
+      server.clients[deviceId].close();
+    }
+  })
+  // console.log(currentSocket.id)
+  // console.log(Object.keys(io.sockets.connected));
+})
+
+server.on('clientConnected', function(client) {
+  console.log(Object.keys(server.clients));
+  userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
+    console.log(userData.length);
+    if(userData.length != 0){
+      userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "connect"}}, function(err,updateStatus){
+        userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id} , function(err,deviceData){
+          client.deviceStatus[deviceData[0].devices[0].device_id] = deviceData[0].devices[0].status;
+          console.log(client.deviceStatus);
+          console.log(deviceData[0].devices[0]);
+          io.sockets.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
+        })
+      })
+    }
+  })
+  console.log('Authen Broker -----> client connected', client.id , '\n');
+});
+
+// fired when a client is disconnected
+server.on('clientDisconnected', function(client) {
+  userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
       console.log(userData.length);
       if(userData.length != 0){
-        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "connect"}}, function(err,updateStatus){
+        userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "disconnect"}}, function(err,userData){
           userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id} , function(err,deviceData){
             client.deviceStatus[deviceData[0].devices[0].device_id] = deviceData[0].devices[0].status;
             console.log(client.deviceStatus);
-            socket.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
+            console.log(deviceData[0].devices[0]);
+            io.sockets.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
           })
         })
       }
     })
-    console.log('Authen Broker -----> client connected', client.id , '\n');
-  });
-
-  // fired when a client is disconnected
-  server.on('clientDisconnected', function(client) {
-    userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
-        console.log(userData.length);
-        if(userData.length != 0){
-          userDB.update({email: client.user , "devices.device_id": client.id}, {$set : {"devices.$.status" : "disconnect"}}, function(err,userData){
-            userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id} , function(err,deviceData){
-              client.deviceStatus[deviceData[0].devices[0].device_id] = deviceData[0].devices[0].status;
-              console.log(client.deviceStatus);
-              socket.emit("deviceStatus", {user: client.user, clientId: deviceData[0].devices[0].device_id, deviceStatus :client.deviceStatus});
-            })
-          })
-        }
-      })
-    console.log('Authen Broker -----> clientDisconnected : ', client.id , '\n');
-  });
-
-})
+  console.log('Authen Broker -----> clientDisconnected : ', client.id , '\n');
+});
 
 // fired when a message is received
-server.on('published', function(packet) {
+server.on('published', function(packet, client) {
+  if (packet.length > 0) {
+    var subscriber = [];
+    for(var key in server.clients){
+      if(server.clients[key].subscriptions[packet.topic] != undefined){
+        console.log(server.clients[key].id);
+        subscriber.push(server.clients[key].id);
+      }
+    }
+    userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,deviceData){
+      if(deviceData.length > 0){
+        var newMessage = new messageDB ({ email: client.user ,
+                   project_id: deviceData[0].devices[0].project_id ,
+                   device_id: client.id ,
+                   topic: packet.topic ,
+                   payload: packet.payload.toString(),
+                   subscriber: subscriber
+                });
+
+        newMessage.save(function (err){
+          if (err) {
+            console.log('add newMessage fail');
+          }else{
+            io.sockets.emit(client.id ,{payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+            io.sockets.emit(packet.topic, {payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+            console.log('add newMessage success');
+          }
+        });
+      }
+    })
+    // console.log(packet.length);
+    // console.log(packet);
+    // console.log(client.id);
+    // console.log(client.user);
+  }
+
   console.log('Authen Broker -----> Published to topic : ' ,packet.topic , '\nAuthen Broker -----> Published message : ', packet.payload.toString() , '\n');
 });
 
-server.on('subscribed', function(topic) {
+server.on('subscribed', function(topic, client) {
+  for(var key in server.clients){
+    console.log(server.clients[key].subscriptions);
+  }
+  if (client.id.split('_')[0] != 'web'){
+    var subscribe;
+    userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,userData){
+      subscribe = userData[0].devices[0].subscribe;
+      // console.log('testtttttttttttttt : '+userData[0].devices[0].subscribe);
+      // console.log(subscribe.length);
+      // console.log(subscribe.indexOf(topic));
+
+      if(subscribe.indexOf(topic) == -1){
+        userDB.update({'email': client.user , 'devices.device_id': client.id},{$push:{'devices.$.subscribe': topic}},
+                          function(err){
+                            if(err){
+                              console.log('add subscribe fail');
+                            }else{
+                              console.log('add subscribe success');
+                            }
+                          });
+      }
+    })
+    io.sockets.emit('subtopic', {topic: topic, deviceId: client.id});
+  }
+
   console.log('Authen Broker -----> subscribed : ', topic , '\n');
 });
 
 server.on('unsubscribed', function(topic, client) {
+  userDB.update({'email': client.user ,'devices.device_id': client.id},{$pull:{'devices.$.subscribe': topic}},
+                      function(err){
+                        if(err){
+                          console.log('remove subscribe fail');
+                        }else{
+                          io.sockets.emit('unsubtopic', {topic: topic});
+                          console.log('remove subscribe success');
+                        }
+                      });
+  if (client.id.split('_')[0] != 'web'){
+    io.sockets.emit('unsubtopic', {topic: topic, deviceId: client.id});
+  }
   console.log('Authen Broker -----> unsubscribed : ', topic , '\n');
 });
 
@@ -202,6 +329,22 @@ function setup() {
   server.authenticate = authenticate;
   server.authorizePublish = authorizePublish;
   server.authorizeSubscribe = authorizeSubscribe;
+  userDB.find({},function(err,userData){
+    console.log(userData[1]._id);
+    for(var i=0; i < userData.length; i++){
+      // console.log(userData[i].devices);
+      for(var j=0; j < userData[i].devices.length; j++){
+        var item_update = {'$set':{}}
+        item_update['$set']['devices.'+j+'.status'] = 'disconnect';
+        userDB.update({"_id":userData[i]._id},item_update, function(err){
+          console.log(err);
+        });
+        
+      }
+    }
+    console.log('update disconnect status')
+  })
+  io.sockets.emit('restartServer' , 'disconnect');
   console.log('Authen Broker -----> Mosca server is up and running');
   console.log (ip.address() , '\n');
 }
