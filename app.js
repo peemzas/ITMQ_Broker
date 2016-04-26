@@ -17,7 +17,7 @@ var options = {
 };
 
 var AuthenBroker = require('./routes/AuthenBroker');
-var AuthenBroker = require('./routes/PublicBroker');
+var PublicBroker = require('./routes/PublicBroker');
 var home = require('./routes/index');
 
 var app = express();

@@ -3,3 +3,33 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  p Authen Devices Connected :
+    label#AuthenDevices #{countAuthenDeviceConnected}
+  p Authen All Message Published:
+    label#AuthenMessage #{countAuthenMessagePublish}
+
+  p Public Devices Connected :
+    label#PublicDevices #{countPublicDeviceConnected}
+  p Public All Message Published:
+    label#PublicMessage #{countPublicMessagePublish}
+
+  script(src='/javascripts/socket.io/socket.io.js')
+  script(src='/javascripts/jquery/dist/jquery.js')
+  script.
+    var socketAuthen = io('http://neutron.it.kmitl.ac.th:5000');
+    var socketPublic = io('http://neutron.it.kmitl.ac.th:5001');
+    socketAuthen.on('countAuthenDeviceConnected', function(data){
+        $('#AuthenDevices').text(' ' + data);
+    })
+
+    socketAuthen.on('countAuthenMessagePublish', function(data){
+        $('#AuthenMessage').text(' ' + data);
+    })
+
+    socketPublic.on('countPublicDeviceConnected', function(data){
+        $('#PublicDevices').text(' ' + data);
+    })
+
+    socketPublic.on('countPublicMessagePublish', function(data){
+        $('#PublicMessage').text(' ' + data);
+    })

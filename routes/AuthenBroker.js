@@ -9,6 +9,8 @@ var io = require('socket.io').listen(5000);
 
 var mongoose = require('mongoose');
 var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
+var countAuthenDeviceConnected = 0;
+var countAuthenMessagePublish = 0;
 // var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
 // var mongodbURL='mongodb://localhost/mqttserver';
 
@@ -197,7 +199,12 @@ io.sockets.on("connection", function(socket){
 })
 
 server.on('clientConnected', function(client) {
-  console.log(Object.keys(server.clients));
+  // console.log(server.servers[0]._connections);
+  // console.log(server);
+  console.log(server.servers[1]);
+  countAuthenDeviceConnected++;
+  io.sockets.emit('countAuthenDeviceConnected', countAuthenDeviceConnected);
+
   userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
     console.log(userData.length);
     if(userData.length != 0){
@@ -216,6 +223,10 @@ server.on('clientConnected', function(client) {
 
 // fired when a client is disconnected
 server.on('clientDisconnected', function(client) {
+  console.log(server.servers[1]);
+  countAuthenDeviceConnected--;
+  io.sockets.emit('countAuthenDeviceConnected', countAuthenDeviceConnected);
+
   userDB.find({email: client.user , "devices.device_id": client.id}, function(err,userData){
       console.log(userData.length);
       if(userData.length != 0){
@@ -235,6 +246,9 @@ server.on('clientDisconnected', function(client) {
 // fired when a message is received
 server.on('published', function(packet, client) {
   if (packet.length > 0) {
+    countAuthenMessagePublish++;
+    io.sockets.emit('countAuthenMessagePublish', countAuthenMessagePublish);
+    
     var subscriber = [];
     for(var key in server.clients){
       if(server.clients[key].subscriptions[packet.topic] != undefined){
@@ -242,27 +256,47 @@ server.on('published', function(packet, client) {
         subscriber.push(server.clients[key].id);
       }
     }
-    userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,deviceData){
-      if(deviceData.length > 0){
-        var newMessage = new messageDB ({ email: client.user ,
-                   project_id: deviceData[0].devices[0].project_id ,
-                   device_id: client.id ,
-                   topic: packet.topic ,
-                   payload: packet.payload.toString(),
-                   subscriber: subscriber
-                });
 
-        newMessage.save(function (err){
-          if (err) {
-            console.log('add newMessage fail');
-          }else{
-            io.sockets.emit(client.id ,{payload: packet.payload.toString(), topic: packet.topic, date: Date()});
-            io.sockets.emit(packet.topic, {payload: packet.payload.toString(), topic: packet.topic, date: Date()});
-            console.log('add newMessage success');
-          }
-        });
-      }
-    })
+    if (client.id.split('_')[0] != 'web'){
+      userDB.find({email: client.user , "devices.device_id": client.id}, {"devices.device_id.$": client.id}, function(err,deviceData){
+        if(deviceData.length > 0){
+          var newMessage = new messageDB ({ email: client.user ,
+                     project_id: deviceData[0].devices[0].project_id ,
+                     device_id: client.id ,
+                     topic: packet.topic ,
+                     payload: packet.payload.toString(),
+                     subscriber: subscriber
+                  });
+
+          newMessage.save(function (err){
+            if (err) {
+              console.log('add newMessage fail');
+            }else{
+              io.sockets.emit(client.id ,{payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+              io.sockets.emit(packet.topic, {payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+              console.log('add newMessage success');
+            }
+          });
+        }
+      })
+    }else{
+      var newMessage = new messageDB ({ device_id: client.id ,
+                     topic: packet.topic ,
+                     payload: packet.payload.toString(),
+                     subscriber: subscriber
+                  });
+
+      newMessage.save(function (err){
+            if (err) {
+              console.log('add newMessage fail');
+            }else{
+              io.sockets.emit(client.id ,{payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+              io.sockets.emit(packet.topic, {payload: packet.payload.toString(), topic: packet.topic, date: Date()});
+              console.log('add newMessage success');
+            }
+          });
+    }
+    
     // console.log(packet.length);
     // console.log(packet);
     // console.log(client.id);
@@ -371,4 +405,4 @@ function setup() {
 //   res.render('index', { title: 'ITMQ' });
 // });
 
-module.exports = router;
+// module.exports = router;

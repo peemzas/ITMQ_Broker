@@ -2,8 +2,12 @@ var express = require('express');
 var router = express.Router();
 var mosca = require('mosca');
 var ip = require('ip');
+var io = require('socket.io').listen(5001);
 var mongoose = require('mongoose');
 var mongodbURL='mongodb://mqttserver:qwerty@proton.it.kmitl.ac.th:27017/mqttserver';
+
+var countPublicDeviceConnected = 0;
+var countPublicMessagePublish = 0;
 // var mongodbURL='mongodb://10.50.8.27:27017/mqttserver'; // IP Address
 // var mongodbURL='mongodb://localhost/mqttserver';
 
@@ -16,25 +20,24 @@ var ascoltatore = {
 };
 
 var settings = {
-  port: 1883,
-  backend: ascoltatore,
-  http: {
-    port: 1884,
-    bundle: true,
-    static: './'
-  },
+  // port: 1883,
+  // backend: ascoltatore,
+  // http: {
+  //   port: 1884,
+  //   bundle: true,
+  //   static: './'
+  // },
 
-  // interfaces: [
-  //       { type: "mqtt", port: 1883 },
-  //       { type: "http", port: 1884 }
-  // ],
-  stats: false,
-  backend: ascoltatore,
-  persistence : {
-        factory: mosca.persistence.Mongo,
-        url: mongodbURL,
-        autoClose: false
-  }
+  interfaces: [
+        { type: "mqtt", port: 1883 },
+        { type: "http", port: 1884 }
+  ],
+  stats: false
+  // backend: ascoltatore
+  // persistence : {
+  //       factory: mosca.persistence.Mongo,
+  //       url: mongodbURL
+  // }
 };
 
 var server = new mosca.Server(settings);
@@ -58,11 +61,17 @@ var server = new mosca.Server(settings);
 
 
 server.on('clientConnected', function(client) {
-    console.log('Public Broker -----> client connected', client.id , '\n');
+  countPublicDeviceConnected++;
+  io.sockets.emit('countPublicDeviceConnected', countPublicDeviceConnected)
+  console.log('Public Broker -----> client connected', client.id , '\n');
 });
 
 // fired when a message is received
 server.on('published', function(packet) {
+  if (packet.length > 0) {
+    countPublicMessagePublish++;
+    io.sockets.emit('countPublicMessagePublish', countPublicMessagePublish);
+  }
   console.log('Public Broker -----> Published to topic : ' ,packet.topic , '\nPublic Broker -----> Published message : ', packet.payload.toString() , '\n');
 });
 
@@ -81,6 +90,8 @@ server.on('clientDisconnecting', function(client) {
  
 // fired when a client is disconnected
 server.on('clientDisconnected', function(client) {
+  countPublicDeviceConnected--;
+  io.sockets.emit('countPublicDeviceConnected', countPublicDeviceConnected)
   console.log('Public Broker -----> clientDisconnected : ', client.id , '\n');
 });
 
@@ -117,4 +128,4 @@ function setup() {
 //   res.render('index', { title: 'ITMQ' });
 // });
 
-module.exports = router;
+// module.exports = router;
