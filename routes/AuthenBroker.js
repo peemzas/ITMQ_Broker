@@ -67,7 +67,7 @@ var messageDB = mongoose.model('message', { email: String,
                                     topic: String,
                                     payload: String,
                                     subscriber: [String],
-                                    date: { type: Date, default: Date.now, required: true, expires: '1h' }
+                                    date: { type: Date, default: Date.now, required: true, expires: '15d' }
                                 });
 
 // function createConnection(port) {
@@ -200,8 +200,8 @@ io.sockets.on("connection", function(socket){
 
 server.on('clientConnected', function(client) {
   // console.log(server.servers[0]._connections);
-  // console.log(server);
-  console.log(server.servers[1]);
+  console.log("connectserver : ");
+  console.log(server);
   countAuthenDeviceConnected++;
   io.sockets.emit('countAuthenDeviceConnected', countAuthenDeviceConnected);
 
@@ -223,7 +223,8 @@ server.on('clientConnected', function(client) {
 
 // fired when a client is disconnected
 server.on('clientDisconnected', function(client) {
-  console.log(server.servers[1]);
+  console.log("disconnectserver : ");
+  console.log(server);
   countAuthenDeviceConnected--;
   io.sockets.emit('countAuthenDeviceConnected', countAuthenDeviceConnected);
 

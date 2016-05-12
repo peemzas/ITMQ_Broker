@@ -1,35 +1,96 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
-  p Authen Devices Connected :
-    label#AuthenDevices #{countAuthenDeviceConnected}
-  p Authen All Message Published:
-    label#AuthenMessage #{countAuthenMessagePublish}
+  .container.container-main
+    .col-md-12
+      img.logo-home(src='/images/MQTT-Logo-Green.png')
+    .row
+      .col-sm-6
+        .panel
+          p.head-broker Authentication Broker
+          p Authen Devices Connected : 
+            label#AuthenDevices #{countAuthenDeviceConnected}
+          p Authen All Message Published : 
+            label#AuthenMessage #{countAuthenMessagePublish}
+      .col-sm-6
+        .panel
+          p.head-broker Public Broker
+          p Public Devices Connected : 
+            label#PublicDevices #{countPublicDeviceConnected}
+          p Public All Message Published :
+            label#PublicMessage #{countPublicMessagePublish}
+    .row
+      .col-md-12
+        div#chartdiv
+    //- h1= title
+    //- p Welcome to #{title}
+    //- p Authen Devices Connected : 
+    //-   label#AuthenDevices #{countAuthenDeviceConnected}
+    //- p Authen All Message Published : 
+    //-   label#AuthenMessage #{countAuthenMessagePublish}
 
-  p Public Devices Connected :
-    label#PublicDevices #{countPublicDeviceConnected}
-  p Public All Message Published:
-    label#PublicMessage #{countPublicMessagePublish}
+    //- p Public Devices Connected : 
+    //-   label#PublicDevices #{countPublicDeviceConnected}
+    //- p Public All Message Published :
+    //-   label#PublicMessage #{countPublicMessagePublish}
 
-  script(src='/javascripts/socket.io/socket.io.js')
-  script(src='/javascripts/jquery/dist/jquery.js')
-  script.
-    var socketAuthen = io('http://neutron.it.kmitl.ac.th:5000');
-    var socketPublic = io('http://neutron.it.kmitl.ac.th:5001');
-    socketAuthen.on('countAuthenDeviceConnected', function(data){
-        $('#AuthenDevices').text(' ' + data);
-    })
+    //Java Scripts
+    script(src='/bower_components/bootstrap-material-design/dist/js/material.min.js')
+    script(src='/bower_components/bootstrap-material-design/dist/js/ripples.min.js')
+    script(src='/javascripts/socket.io/socket.io.js')
+    script(src='/javascripts/jquery/dist/jquery.js')
+    script(src='/javascripts/amcharts/amcharts.js')
+    script(src='/javascripts/amcharts/pie.js')
+    script(src='/javascripts/amcharts/themes/light.js')
+    script.
+      var countAuthenDeviceConnected = "#{countAuthenDeviceConnected}";
+      var countPublicDeviceConnected = "#{countPublicDeviceConnected}";
 
-    socketAuthen.on('countAuthenMessagePublish', function(data){
-        $('#AuthenMessage').text(' ' + data);
-    })
+      var socketAuthen = io('http://neutron.it.kmitl.ac.th:5000');
+      var socketPublic = io('http://neutron.it.kmitl.ac.th:5001');
+      socketAuthen.on('countAuthenDeviceConnected', function(data){
+          $('#AuthenDevices').text(' ' + data);
+      })
 
-    socketPublic.on('countPublicDeviceConnected', function(data){
-        $('#PublicDevices').text(' ' + data);
-    })
+      socketAuthen.on('countAuthenMessagePublish', function(data){
+          $('#AuthenMessage').text(' ' + data);
+      })
 
-    socketPublic.on('countPublicMessagePublish', function(data){
-        $('#PublicMessage').text(' ' + data);
-    })
+      socketPublic.on('countPublicDeviceConnected', function(data){
+          $('#PublicDevices').text(' ' + data);
+      })
+
+      socketPublic.on('countPublicMessagePublish', function(data){
+          $('#PublicMessage').text(' ' + data);
+      })
+
+      var chart = AmCharts.makeChart("chartdiv", {
+          "type": "pie",
+          "theme": "light",
+          "dataProvider": [ {
+            "title": "Authen Device Connected",
+            "value": countAuthenDeviceConnected
+          }, {
+            "title": "Public Device Connected",
+            "value": countPublicDeviceConnected
+          } ],
+          "titleField": "title",
+          "valueField": "value",
+          "labelRadius": 5,
+
+          "radius": "40%",
+          "innerRadius": "60%",
+          "labelText": "[[title]]",
+          "export": {
+            "enabled": true
+          }
+        } 
+      );
+
+    style.
+      #chartdiv {
+        width   : 100%;
+        height    : 500px;
+        font-size : 11px;
+        background-color : #FFFFFF;
+      }

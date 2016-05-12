@@ -1,0 +1,968 @@
+$screen-lg: 1170px
+$screen-md: 970px
+$screen-sm: 768px
+$screen-ip: 320px
+
+$main-font: sans-serif
+$th-font: "ThaiSansNeue"
+$en-font: Arial
+$head-font: sans-serif
+$font-size: 16px
+
+$light-green: #17bfa4
+$green: #008584
+$dark-green: #006666
+$ex-green: #009688
+$green-btn: #4caf50
+$light-grass: #CFF09E
+$grass: #A8DBA8
+$dark-grass: #79BD9A
+$blue: #188DC3
+$light-blue: #91CBF1
+$dark-blue: #046D8B
+$white: #ffffff
+$white-gray: #f5f5f5
+$light-gray: #e9e9e9
+$gray: #cccccc
+$dark-gray: #4d4d4d
+$black: #323232
+$connect: #8BC34A
+$disconnect: #DA2D2D
+
+$head-project: 140px
+$head-device: 140px
+
+=vendor-prefix($name, $argument)
+  -webkit-#{$name}: #{$argument}
+  -ms-#{$name}: #{$argument}
+  -moz-#{$name}: #{$argument}
+  -o-#{$name}: #{$argument}
+  #{$name}: #{$argument}
+
+=border-radius($radius)
+  +vendor-prefix(border-radius, $radius)
+
+=box-shadow($value)
+  +vendor-prefix(box-shadow, $value)
+
+=box-sizing($value)
+  +vendor-prefix(box-sizing, $value)
+
+=transition($value)
+  +vendor-prefix(transition, $value)
+
+=transform($value)
+  +vendor-prefix(transform, $value)
+
+*
+  box-sizing: border-box
+
+.navbar.navbar-green
+  background: $green
+  color: $white
+
+.en-font
+  font-family: sans-serif
+
+.th-font
+  font-family: $th-font
+
+.green
+  background-color: $green !important
+
+.dark-green
+  background-color: $dark-green !important
+
+.ellipsis 
+  text-overflow: ellipsis
+  white-space: nowrap
+  overflow: hidden
+
+.logo-home
+  display: block
+  margin: 0 auto
+  width: 270px
+  @media (max-width: $screen-lg)
+    width: 270px
+  @media (max-width: $screen-md)
+    width: 240px
+    // padding-top: 80px
+  @media (max-width: $screen-sm)
+    width: 200px
+    // padding-top: 200px
+
+.head-broker
+  font-size: 36px
+  text-align: center
+  margin-top: 10px
+  font-family: $en-font
+
+.btn-homewhite
+  &:hover
+    background: $gray
+    color: $dark-gray
+    cursor: pointer
+    text-decoration: none
+  margin-top: 20px
+  padding: 10px
+  background: $white
+  color: $dark-green
+  font-size: 20px
+  text-align: center
+  display: block
+  @media (max-width: $screen-lg)
+    font-size: 18px
+  @media (max-width: $screen-md)
+    font-size: 15px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 18px
+
+.btn-homegreen
+  &:hover
+    background: $ex-green
+    color: $white
+    cursor: pointer
+    text-decoration: none
+  margin-top: 20px
+  padding: 10px
+  background: $light-green
+  color: $white
+  font-size: 20px
+  text-align: center
+  text-decoration: none
+  display: block
+  @media (max-width: $screen-lg)
+    font-size: 18px
+  @media (max-width: $screen-md)
+    font-size: 15px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 18px
+
+.btn-green
+  &:hover
+    background: $light-green
+    cursor: pointer
+  background: $dark-green
+  color: $white
+
+
+.btn-grey
+  background: $gray !important
+  color: $dark-gray
+  text-transform: none
+  font-size: 24px
+
+.btn-nav
+  &:hover
+    background: $ex-green !important
+  margin: 5px
+  background: $dark-green !important
+  height: 80%
+  margin: 5px
+  line-height: 10px !important
+
+.padding-nav
+  padding-top: 100px
+  @media (max-width: $screen-lg)
+    padding-top: 100px
+  @media (max-width: $screen-md)
+    padding-top: 80px
+  @media (max-width: $screen-sm)
+    padding-top: 60px
+
+.padding-nav-login
+  padding-top: 100px
+  @media (max-width: $screen-lg)
+    padding-top: 80px
+  @media (max-width: $screen-md)
+    padding-top: 60px
+  @media (max-width: $screen-sm)
+    padding-top: 20px
+
+.container-main
+  width: $screen-lg
+  @media (max-width: $screen-lg)
+    width: $screen-md
+  @media (max-width: $screen-md)
+    width: $screen-sm
+  @media (max-width: $screen-sm)
+    width: $screen-ip
+
+.container-home
+  height: 100%
+
+.container-table
+  margin: auto
+  display: table
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+
+.table-cell
+  display: table-cell
+  vertical-align: middle
+
+.container-iot
+  padding-top: 10px
+
+.container-iot-bg
+  background: $light-green 
+
+.container-about
+  width: 800px
+  @media (max-width: $screen-sm)
+    width: 90%
+  @media (max-width: $screen-ip)
+    width: 90%
+
+.container-footer
+  width: 800px
+  @media (max-width: $screen-sm)
+    width: 90%
+  @media (max-width: $screen-ip)
+    width: 90%
+
+.container-demo
+  color: $dark-gray
+  @media (max-width: $screen-sm)
+    width: 95%
+  @media (max-width: $screen-ip)
+    width: 95%
+
+.container-plan
+  @media (max-width: $screen-sm)
+    width: 95%
+  @media (max-width: $screen-ip)
+    width: 95%
+
+.container-user
+  background: $light-gray
+  @media (max-width: $screen-sm)
+    width: 95%
+  @media (max-width: $screen-ip)
+    width: 95%
+
+.footer-main
+  background: $gray
+  height: 420px
+  font-family: $th-font
+
+.p-demo-head
+  padding-left: 10px
+  padding-bottom: 10px
+  font-size: 28px
+  color: #006666
+
+.p-user-head
+  color: #006666
+  font-size: 28px
+  padding-left: 10px
+  @media (max-width: $screen-lg)
+    font-size: 22px
+  @media (max-width: $screen-sm)
+    font-size: 24px
+  @media (max-width: $screen-ip)
+    font-size: 20px
+
+.p-project-head
+  color: #006666
+  font-size: 28px
+  padding-left: 10px
+  @media (max-width: $screen-lg)
+    font-size: 22px
+  @media (max-width: $screen-sm)
+    font-size: 0
+
+.content-main
+  text-align: center
+  font-family: $main-font
+  font-size: 48px
+  color: $white
+  margin-top: 160px
+  @media (max-width: $screen-lg)
+    font-size: 36px
+    margin-top: 140px
+  @media (max-width: $screen-md)
+    font-size: 28px
+    margin-top: 115px
+  @media (max-width: $screen-sm)
+    font-size: 28px
+    margin-top: 0
+  @media (max-width: $screen-ip)
+    font-size: 24px
+    margin-top: 0
+
+.content-iot
+  font-family: $th-font
+  font-size: 24px
+  color: $dark-gray
+
+.content-plan
+  font-family: $th-font
+  font-size: 24px
+  color: $dark-gray
+
+.content-main-small
+  font-size: 36px
+  margin-top: 25px
+
+.content-box
+  height: 100%
+
+.content-contact
+  padding-left: 20px
+  padding-bottom: 40px
+  font-size: 28px
+  @media (max-width: $screen-md)
+    padding-bottom: 60px
+    font-size: 26px
+  @media (max-width: $screen-sm)
+    padding-bottom: 20px
+    font-size: 22px
+  @media (max-width: $screen-ip)
+    padding-bottom: 40px
+    font-size: 20px
+
+.content-user-info
+  color: #4d4d4d
+  font-size: 14px
+  @media (max-width: $screen-lg)
+    font-size: 12px
+  @media (max-width: $screen-ip)
+    font-size: 10px
+
+.panel-about
+  background: $white-gray
+  // margin-left: 5px
+  // margin-right: 5px
+  // height: 470px
+  padding-top: 40px
+  padding-left: 35px
+  padding-right: 35px
+  border-radius: 100%
+  height: 260px
+  width: 260px
+  margin: 10px auto
+  position: relative
+  .cover
+    color: white
+    background: rgba(50,50,50,.9)
+    width: 100%
+    height: 100%
+    position: absolute
+    top: 0
+    left: 0
+    +border-radius(100%)
+    opacity: 0
+    cursor: pointer
+    +transition(.4s)
+    &:hover
+      opacity: 1
+    p.readmore
+      font-size: 50px
+      text-align: center
+      line-height: 260px
+  @media (max-width: $screen-lg)
+    margin: 28px auto
+    height: 240px
+    width: 240px
+    .cover
+      p.readmore
+        font-size: 45px
+        line-height: 230px
+  @media (max-width: $screen-md)
+    margin: 50px auto
+    height: 200px
+    width: 200px
+    .cover
+      p.readmore
+        font-size: 40px
+        line-height: 195px
+  @media (max-width: $screen-sm)
+    margin: 20px auto
+    height: 125px
+    width: 100%
+    border-radius: 0%
+    padding-top: 20px
+    .cover
+      +border-radius(0%)
+      p.readmore
+        font-size: 40px
+        line-height: 120px
+  @media (max-width: $screen-ip)
+    margin: 20px auto
+    height: 100px
+    width: 100%
+    border-radius: 0%
+    padding-top: 20px
+    .cover
+      +border-radius(0%)
+      p.readmore
+        font-size: 40px
+        line-height: 95px
+
+.panel-itmq
+  background: $white-gray 
+  height: auto
+  padding: 30px 35px
+  font-size: 28px
+  font-family: $th-font
+  @media (max-width: $screen-sm)
+    padding: 15px 20px
+    font-size: 20px
+  @media (max-width: $screen-ip)
+    font-size: 16px
+
+.panel-plan
+  background: $white-gray
+  margin-top: 130px
+  height: auto
+  padding-left: 35px
+  padding-right: 35px
+  @media (max-width: $screen-md)
+    margin-top: 70px
+  @media (max-width: $screen-ip)
+    margin-top: 60px
+
+.panel-project
+  height: 220px
+  @media (max-width: $screen-lg)
+    height: 210px
+  @media (max-width: $screen-sm)
+    height: auto
+
+.panel-head-project
+  color: $white !important
+  background: $blue !important
+  height: $head-project
+  text-align: center
+  padding: 0
+  @media (max-width: $screen-ip)
+    height: ($head-project)-20px
+
+.panel-des-project
+  color: $dark-gray !important
+  font-size: 14px
+  @media (max-width: $screen-lg)
+    font-size: 12px
+  @media (max-width: $screen-ip)
+    padding-top: 10px
+    font-size: 10px
+
+.p-project-des
+  font-size: 12px
+  font-weight: 700
+  @media (max-width: $screen-lg)
+    font-size: 10px
+  @media (max-width: $screen-md)
+    font-size: 12px
+  @media (max-width: $screen-sm)
+    font-size: 12px
+  @media (max-width: $screen-ip)
+    font-size: 10px
+
+.panel-device
+  height: 220px
+  @media (max-width: $screen-lg)
+    height: 210px
+  @media (max-width: $screen-sm)
+    height: auto
+
+.panel-head-device
+  color: $white !important
+  background: $light-green !important
+  height: $head-device
+  text-align: center
+  padding: 0
+  @media (max-width: $screen-ip)
+    height: ($head-project)-20px
+
+.panel-des-device
+  color: $dark-gray !important
+  font-size: 12px
+  @media (max-width: $screen-lg)
+    font-size: 10px
+    padding: 15px 10px
+  @media (max-width: $screen-md)
+    font-size: 12px
+  @media (max-width: $screen-ip)
+    padding-top: 10px
+    font-size: 10px
+
+.p-device-des
+  font-size: 12px
+  font-weight: 700
+  @media (max-width: $screen-lg)
+    font-size: 10px
+  @media (max-width: $screen-md)
+    font-size: 12px
+  @media (max-width: $screen-sm)
+    font-size: 12px
+  @media (max-width: $screen-ip)
+    font-size: 10px
+
+.col-dashboard
+  padding-left: 10px
+  padding-right: 10px
+
+.img-iot
+  width: 720px
+  @media (max-width: $screen-lg)
+    width: 720px
+  @media (max-width: $screen-md)
+    width: 650px
+    margin-top: 60px
+  @media (max-width: $screen-sm)
+    width: 70%
+  @media (max-width: $screen-ip)
+    width: 250px
+
+.pic-size
+  width: 95px
+  @media (max-width: $screen-sm)
+    width: 50px
+  @media (max-width: $screen-ip)
+    width: 40px
+
+.kmitl
+  width: 100px
+  padding-bottom: 10px
+  @media (max-width: $screen-sm)
+    width: 60px
+  @media (max-width: $screen-ip)
+    width: 40px
+
+.medal-size
+  width: 95px
+  @media (max-width: $screen-lg)
+    width: 80px
+  @media (max-width: $screen-sm)
+    width: 70px
+  @media (max-width: $screen-ip)
+    width: 50px
+
+.heading-plan
+  font-size: 60px
+  padding-bottom: 30px
+  @media (max-width: $screen-lg)
+    font-size: 50px
+    padding-bottom: 30px
+  @media (max-width: $screen-md)
+    font-size: 48px
+    padding-bottom: 10px
+  @media (max-width: $screen-ip)
+    font-size: 36px
+
+.about-modal
+  font-family: $th-font
+  color: $dark-gray
+  font-size: 24px
+
+.logo-what-is
+  width: 320px
+  @media (max-width: $screen-md)
+    width: 300px
+  @media (max-width: $screen-sm)
+    width: 250px
+  @media (max-width: $screen-ip)
+    padding-top: 30px
+    width: 200px
+
+.label-what-is
+  font-family: $th-font
+  color: $green
+  font-size: 100px
+  font-style: italic
+  margin-left: 30px
+  margin-top: 65px
+  @media (max-width: $screen-md)
+    font-size: 90px
+    margin-left: 10px
+  @media (max-width: $screen-sm)
+    font-size: 65px
+    margin-left: 30px
+    margin-top: -40px
+  @media (max-width: $screen-ip)
+    font-size: 50px
+
+.p-about
+  font-size: 40px
+  @media (max-width: $screen-lg)
+    font-size: 36px
+  @media (max-width: $screen-md)
+    font-size: 28px
+  @media (max-width: $screen-sm)
+    font-size: 28px
+  @media (max-width: $screen-ip)
+    font-size: 24px
+
+.p-medal
+  padding-top: 10px
+  margin-bottom: 0
+  font-size: 40px
+  @media (max-width: $screen-lg)
+    font-size: 28px
+  @media (max-width: $screen-md)
+    font-size: 30px
+  @media (max-width: $screen-sm)
+    font-size: 24px
+  @media (max-width: $screen-ip)
+    font-size: 20px
+
+.p-medalcontent
+  font-size: 28px
+  margin-bottom: 0
+  @media (max-width: $screen-lg)
+    font-size: 24px
+  @media (max-width: $screen-md)
+    font-size: 24px
+  @media (max-width: $screen-sm)
+    font-size: 22px
+  @media (max-width: $screen-ip)
+    font-size: 18px
+
+.p-pricing
+  font-size: 28px
+  margin-bottom: 0
+  padding-bottom: 20px
+  @media (max-width: $screen-lg)
+    font-size: 24px
+  @media (max-width: $screen-md)
+    font-size: 24px
+  @media (max-width: $screen-sm)
+    font-size: 22px
+  @media (max-width: $screen-ip)
+    font-size: 18px
+    padding-bottom: 10px
+
+.p-logo-footer
+  margin-top: -60px
+  font-family: $th-font
+  font-size: 50px
+  color: $green
+
+.p-logo-quote
+  margin-top: -20px
+  font-family: $th-font
+  font-size: 36px
+  color: $green
+
+.footer-content
+  font-family: $th-font
+  font-size: 18px
+  color: $black
+
+.footer-heading
+  font-size: 40px
+  margin-bottom: 0px
+
+.green-txt
+  color: $green
+
+.footer-it
+  font-size: 24px
+  margin-bottom: 0px
+  @media (max-width: $screen-lg)
+    font-size: 22px
+  @media (max-width: $screen-md)
+    font-size: 20px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 12px
+
+.itmq-head
+  height: 120px
+  text-align: center
+  background: $green
+
+.user-head
+  height: 60px
+  background: $green
+
+.add-icon
+  color: $white
+  float: left
+  font-size: 24px
+  @media (max-width: $screen-lg)
+    font-size: 22px
+  @media (max-width: $screen-md)
+    font-size: 20px
+  @media (max-width: $screen-sm)
+    font-size: 24px
+  @media (max-width: $screen-ip)
+    font-size: 15px
+
+.edit-icon
+  &:hover
+    color: $gray
+    cursor: pointer
+  float: right
+  padding-right: 5px
+  padding-top: 5px
+  color: $white
+  position: relative
+  z-index: 10
+
+.close-icon
+  &:hover
+    color: $gray
+  color: $white
+  text-shadow: none
+  opacity: 1
+  margin-right: 20px
+  position: relative
+  z-index: 10
+
+.show-status
+   z-index: 10
+   float: left
+   margin-left: 20px
+   padding-top: 5px
+
+.connected
+  color: $connect
+
+.disconnected
+  color: $disconnect
+
+.input-edit-name
+  font-size: 22px
+  color: $white
+  text-align: center
+  margin: 35px auto
+  width: 80%
+
+.input-edit-des
+  color: $dark-gray
+  font-size: 14px
+  @media (max-width: $screen-lg)
+    font-size: 14px
+  @media (max-width: $screen-sm)
+    font-size: 14px
+  @media (max-width: $screen-ip)
+    font-size: 10px
+
+.device-type
+  float: left
+  font-size: 12px
+  margin-top: 5px
+  margin-left: 10px
+
+.p-project-name
+  font-size: 30px
+  margin: 0
+  @media (max-width: $screen-lg)
+    font-size: 26px
+  @media (max-width: $screen-md)
+    font-size: 28px
+  @media (max-width: $screen-sm)
+    font-size: 24px
+  @media (max-width: $screen-ip)
+    font-size: 20px
+
+.btn-projectName
+  background: transparent
+  border: 0px
+  width: 100%
+  height: $head-project
+  margin-top: -20px
+  position: relative
+  @media (max-width: $screen-ip)
+    height: ($head-project)-20px
+
+.btn-deviceName
+  background: transparent
+  border: 0px
+  width: 100%
+  height: $head-device
+  margin-top: -27px
+  position: relative
+
+.p-device-name
+  font-size: 30px
+  margin: 0
+  @media (max-width: $screen-lg)
+    font-size: 26px
+  @media (max-width: $screen-md)
+    font-size: 28px
+  @media (max-width: $screen-sm)
+    font-size: 24px
+  @media (max-width: $screen-ip)
+    font-size: 20px
+
+.btn-addProject
+  &:hover
+    background: $ex-green
+    color: $white
+    cursor: pointer
+    text-decoration: none
+  padding: 10px
+  background: $light-green
+  color: $white
+  font-size: 20px
+  text-align: center
+  text-decoration: none
+  display: block
+  @media (max-width: $screen-lg)
+    font-size: 18px
+  @media (max-width: $screen-md)
+    font-size: 15px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 12px
+
+.btn-addDevice
+  &:hover
+    color: $white
+    cursor: pointer
+    text-decoration: none
+    opacity: 0.8
+  padding: 10px
+  background: $dark-green
+  color: $white
+  font-size: 20px
+  text-align: center
+  text-decoration: none
+  display: block
+  @media (max-width: $screen-lg)
+    font-size: 18px
+  @media (max-width: $screen-md)
+    font-size: 15px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 12px
+
+
+.back-project
+  &:hover
+    text-decoration: none
+  font-size: 20px
+  margin-left: 20px
+  
+.panel-hover
+  &:hover
+    box-shadow: 3px 5px 10px 0 rgba(0, 0, 0, 0.3);
+    transition: box-shadow .4s
+
+.panel-head-project-des
+  min-height: 90px
+  height: auto
+
+.btn-projectName2
+  background: transparent
+  border: 0px
+  width: 100%
+  height: auto
+  min-height: 90px
+  margin-top: -20px
+  position: relative
+
+.break-word
+  word-wrap: break-word
+
+.btn-back-project
+  &:hover
+    color: $white
+    cursor: pointer
+    text-decoration: none
+    opacity: 0.8
+  padding: 10px
+  background: $dark-blue
+  color: $white
+  font-size: 20px
+  text-align: center
+  text-decoration: none
+  display: block
+  margin-bottom: 20px
+  @media (max-width: $screen-lg)
+    font-size: 18px
+  @media (max-width: $screen-md)
+    font-size: 15px
+  @media (max-width: $screen-sm)
+    font-size: 18px
+  @media (max-width: $screen-ip)
+    font-size: 12px
+
+// Chart CSS
+#chartdiv
+  width : 100%;
+  height  : 500px;
+  background-color: #444444
+
+// .logo-small
+//   height: 100%;
+//   position: fixed;
+//   transform: scale(0.04) translateX(-1273%) translateY(-1209%);
+//   transition: transform .4s
+//   &.active
+//     height: 100%;
+//     position: fixed;
+//     transform: scale(0.56) translateX(-356px) translateY(-27px);
+
+// .logo-big
+//   position: absolute;
+//   margin: 0 auto;
+//   bottom: 0;
+//   left: 0;
+//   right: 0;
+//   width: 29vw;
+//   height: 9.5rem;
+//   max-height: 12.5vh;
+//   cursor: pointer;
+//   background-image: url(../images/aspire_one.svg?2);
+//   background-size: contain;
+//   background-repeat: no-repeat;
+//   background-position: left center;
+//   -webkit-transform: translate(-112%,11%) scale(.63);
+//   -ms-transform: translate(-112%,11%) scale(.63);
+//   transform: translate(-112%,11%) scale(.63);
+//   transition: -webkit-transform 1s ease;
+//   transition: transform 1s ease;
+//   will-change: transition;
+//   &.active
+//     webkit-transform: translate(-81.5%,-234%) scale(1);
+//     -ms-transform: translate(-81.5%,-234%) scale(1);
+//     transform: translate(-81.5%,-234%) scale(1);
+//     transition-timing-function: cubic-bezier(.75,0,.7,1)
+
+.fp-auto-height.fp-section,
+.fp-auto-height .fp-slide,
+.fp-auto-height .fp-tableCell 
+  height: auto !important;
+
+
+.page
+  position: relative
+  width: 100%
+  min-height: 100%
+
+#fullpage
+  position: absolute
+  left: 0
+  right: 0
+  height: 100%
+  .navbar
+  .section.page1
+    background: $green
+    display: table
+  .section.page2
+    background: $light-green
+  .section.page3
+    background: $light-gray
+  .section.page4
+    background: $gray
+    
+    @media screen and (min-width: 768px)
+      background: black
+
+.clear
+  clear: both

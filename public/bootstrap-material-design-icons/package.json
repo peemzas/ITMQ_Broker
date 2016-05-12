@@ -1,0 +1,71 @@
+{
+  "name": "bootstrap-material-design-icons",
+  "version": "2.2.0",
+  "description": "Google Material Design Icons For Using With Bootstrap",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mervick/material-design-icons.git"
+  },
+  "main": "index.js",
+  "authors": [
+    {
+      "name": "Andrey Izman",
+      "email": "izmanw@gmail.com"
+    }
+  ],
+  "keywords": [
+    "icons",
+    "material",
+    "material-design",
+    "google",
+    "icons-web-font",
+    "web-font",
+    "bootstrap"
+  ],
+  "style": "css/material-icons.min.css",
+  "license": "(MIT AND CC-BY-4.0)",
+  "bugs": {
+    "url": "http://github.com/mervick/material-design-icons/issues"
+  },
+  "homepage": "http://github.com/mervick/material-design-icons",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-sass": "^0.9.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "gulp": "^3.9.0",
+    "gulp-changed": "^1.3.0",
+    "gulp-util": "^3.0.7",
+    "lodash": "^4.5.0",
+    "material-design-icons": "^2.2.0",
+    "through2": "^2.0.1",
+    "vinyl": "^1.1.1"
+  },
+  "gitHead": "ac0d42491a65992b0c8367ec5b81e9a5ac2dc97e",
+  "_id": "bootstrap-material-design-icons@2.2.0",
+  "scripts": {},
+  "_shasum": "60e2f584367a73c960c511584d6fd5512dbe151e",
+  "_from": "bootstrap-material-design-icons@*",
+  "_npmVersion": "2.14.12",
+  "_nodeVersion": "4.2.4",
+  "_npmUser": {
+    "name": "izman",
+    "email": "izmanw@gmail.com"
+  },
+  "dist": {
+    "shasum": "60e2f584367a73c960c511584d6fd5512dbe151e",
+    "tarball": "https://registry.npmjs.org/bootstrap-material-design-icons/-/bootstrap-material-design-icons-2.2.0.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "izman",
+      "email": "izmanw@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-9-west.internal.npmjs.com",
+    "tmp": "tmp/bootstrap-material-design-icons-2.2.0.tgz_1456441838815_0.5177797423675656"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/bootstrap-material-design-icons/-/bootstrap-material-design-icons-2.2.0.tgz"
+}
